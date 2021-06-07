@@ -1,0 +1,81 @@
+//Docker file                       
+FROM node:apline                
+WORKDIR '/app'
+
+COPY package.json .
+RUN npm install
+COPY . .
+CMD ["npm","start"]
+EXPOSE 3000
+
+
+
+
+//Commands 
+docker build . //BUILD DOCKER IMAGE FROM DOCKER FILE
+docker image ls // CHECK IMAGES
+docker image rm ID_IMAGE // DELETE IMAGE
+docker build -t react-image . //build an image with a given n
+docker run -d --name react-app react-image //BUILD CONTAINER FROM AN IMAGE
+docker ps // show runnig contrainer
+docker ps -a //show all containers
+docker rm react-app -f //kill containner that acitivly run
+docker run -d -p 3000:3000 --name react-app react-image// connect our container
+docker exec -it react-app bash//connect to the file ro the filesytem of the container in interactive mode
+
+docker exec -it react-app bash
+docker run -d --name react-app react-image
+docker run -v dirlocaldirectory:container -d -p 3000:3000 --name react-app react-image
+ 
+
+docker ignore (node_modules
+Dockerfile
+.git
+.gitignore 
+.dockerignore
+.env
+)
+docker build -t react-image // 
+docker run -v $(pwd)/src:/app -d  -p 3000:3000 --name react-app react-image // (bind mount)sync host machine with container (if there is pb add -it)
+docker run  -e CHOKIDAR_USEPOLLING=true -v ${pwd}/src:/app/src -d  -p 4000:3000 --name react-app react-image //(if there is pb add -it)
+docker run  -e CHOKIDAR_USEPOLLING=true e REACT_APP_NAME=myname -v ${pwd}/src:/app/src:ro -d  -p 4000:3000 --name react-app react-image// BIND MOUNT READ ONLY //(if there is pb add -it)
+docker run -v %cd%\src:/app/src -d -p 4000:3000 --name react-app react-image //(if there is pb add -it)
+ docker run -v ${pwd}/src:/app/src -d  -p 3000:3000 --name react-app react-image //(if there is pb add -it)
+docker run  -e CHOKIDAR_USEPOLLING=true  -v ${pwd}/src:/app/src:ro -d  -p 4000:3000 --name react-app react-image //(if there is pb add -it)
+docker run --env-file ./.env -v $(pwd)/src:/app/src:ro -d  -p 3000:3000 --name react-app react-image //(if there is pb add -it)
+
+// DOCKER COMPOSE
+version :"3"
+services:
+    react-app:
+        build: .
+        ports:
+            - "3000:3000"
+        volumes:
+            - ./src:/app/src
+        environment: 
+            - REACT_APP_NAME=wassim
+        env_file: 
+            - ./.env
+            
+// COMMANDS DOCKER COMPOSE
+docker-compose up -d //run all containers
+docker-compose down // bring down all our containers
+docker-compose up -d --build . //Rebuild image if we have changes in the the docker file
+
+
+// MULTI STAGE BUILD FOR PRODUCTION
+1.Rename the file Dockerfile to Dockerdile.dev
+2.run docker build -f Dockerfile.dev .
+3.create Dockerfile.prod
+4.run command docker build -f Dockerfile.prod -t docker-image-prod . // create an nginx image
+5.run command docker run --env-file ./.env -d -p 80:80 --name react-app-prod docker-image-prod
+
+6.create file docker-compose-backup.yml docker-compose-prod.yml docker-compose-dev.yml 
+7. run docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d --build // run dev env
+8. run docker-compose -f docker-compose.yml -f docker-compose-dev.yml down // turn down
+8. run docker-compose -f docker-compose.yml -f docker-compose-prod.yml up -d --build // run prod env
+
+9. docker build --target build  -f Dockerfile.prod -t multi-stage-exemple .
+
+
